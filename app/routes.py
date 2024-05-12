@@ -22,7 +22,6 @@ def products():
 @app.route('/author')
 def author():
     return render_template("author.html.jinja")
-sour
 
 @app.route('/product/<product_id>')
 def product(product_id):
