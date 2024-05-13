@@ -16,6 +16,26 @@
         <p>to jest plik bazowy</p>
         {%endblock%}
     </section>
+    <form action="{{url_for('extract')}}" method="POST" class = "container">
+        <div class= "container-fluid">
+            <li class="nav-item">
+                <a class="nav-item" href="{{url_for('index')}}">
+            </li>
+            <li class="nav-item">
+                <a class="nav-item" href="{{url_for('author')}}">
+            </li>
+            <li class="nav-item">
+                <a class="nav-item"  href="{{url_for('extract')}}">
+            </li>
+            <li class="nav-item">
+            <a class="nav-item" href="{{url_for('products')}}">
+            </li>
+        </div>
+    </form>
+    {%if error is defined %}
+    
+    {%end block%}
+
     <footer>Łucja Romańska, Uniwersytet Ekonomiczny w Krakowie</footer>
 </body>
 </html>
