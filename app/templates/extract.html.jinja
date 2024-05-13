@@ -11,7 +11,7 @@
                 </div>
                 <div class="col-auto">
                         <span id="product_idHelpInline" class="form-text">
-                        Kod produktu musi zawierać 8-10 cyfr.
+                        Kod produktu musi zawierać 5-10 cyfr.
                         </span>
                 </div>
                 <div class="col-auto">
@@ -19,4 +19,7 @@
                 </div>
         </div>
 </form>
+        {%if error is defined %}
+    
+    {%end block%}
 {%endblock%}
