@@ -5,12 +5,12 @@ import requests
 
 @app.route('/')
 def index():
-    return render_template("index.html.jinja")
+    return render_template("index.html")
 
-@app.route('/hello')
-@app.route('/hello/<name>')
-def hello(name= "World"):
-    return f"Hello, {name}!"
+# @app.route('/hello')
+# @app.route('/hello/<name>')
+# def hello(name= "World"):
+#     return f"Hello, {name}!"
 
 @app.route('/extract', methods=['POST','GET'])
 def extract():
@@ -19,33 +19,33 @@ def extract():
         url = f"https://www.ceneo.pl/{product_id}"
         response = requests.get(url)
         if response.status_code == requests.codes['ok']:
-            page_dom=BeautifulSoup(response)
+            page_dom=BeautifulSoup(response.text, "html.parser")
             try:
-                opinions_count = page_dom.select_one("a.product-review_link > span").get_text().strip()
+                opinions_count = page_dom.select_one("a.product-review__link > span").get_text().strip()
             except AttributeError:
                 opinions_count = 0
             if opinions_count:
                 #proces ekstrakcji
                 return redirect(url_for('product',product_id = product_id))
-            error = "Dany produkt nie posiada jeszcze żadnej opinii."   
+            error = "Dany produkt nie posiada jeszcze żadnej opinii." 
+            return render_template('extract.html', error = error)  
         error = "Produkt o danym id nie istnieje." 
-        return render_template("extract.html.jinja", error = error)
+        return render_template("extract.html", error = error)
+    return render_template("extract.html")
 
-    return render_template("extract.html.jinja")
 
 @app.route('/author')
 def author():
-
-    return render_template("author.html.jinja")
+    return render_template("author.html")
 
 @app.route('/products')
 def products():
-    return render_template('products.html.jinja')
+    return render_template('products.html')
 
-@app.route('/author')
-def author():
-    return render_template("author.html.jinja")
+# @app.route('/author')
+# def author():
+#     return render_template("author.html")
 
 @app.route('/product/<product_id>')
 def product(product_id):
-    return render_template('products.html.jinja', product_id = product_id)
+    return render_template('product.html', product_id = product_id)
