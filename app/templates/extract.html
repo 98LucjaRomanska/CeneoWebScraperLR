@@ -5,6 +5,8 @@
     <form action="{{ url_for('extract') }}" method="POST" class="container">
         <div class="row g-3 align-items-center">
             <div class="col-auto">
+              <h2> Ekstrakcja opinii</h2>
+              <h2> Lista produktów </h2>
               <label for="product_id" class="col-form-label">Kod produktu</label>
             </div>
             <div class="col-auto">
@@ -22,7 +24,7 @@
     </form>
     {% if error is defined %}
         <div class="alert alert-secondary alert-dismissible fade show mt-3 mb-3" role="alert">
-            <strong>Uwaga!</strong> {{ error }}
+            <strong> Uwaga!</strong> {{ error }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endif %}
