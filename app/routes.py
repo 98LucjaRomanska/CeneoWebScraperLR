@@ -1,11 +1,13 @@
 from app import app
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request, redirect, url_for, send_file
 from bs4 import BeautifulSoup
 import pandas as pd 
 import numpy as np 
 import requests
 import json
+import io
 import os
+
 from app import utils
 @app.route('/')
 def index():
@@ -27,6 +29,7 @@ def extract():
            
             opinions_count = utils.extract(page_dom, "a.product-review__link > span")
             if opinions_count:
+                product_name = utils.extract(page_dom, "")
                 url = f"https://www.ceneo.pl/{product_id}"
                 all_opinions = []
                 while(url):
@@ -57,6 +60,12 @@ def extract():
                     cons_count = opinions.pros.apply(lambda p: True if p else False).sum()
                     opinions.recommendation = opinions.recommendation.apply(lambda r: "Brak rekomendacji")
                     stats = {
+                        "product_id": product_id, 
+                        "pros_count": opinions.pros.apply(lambda p: 1 if p else 0 ).sum(),
+                        "cons_count": opinions.cons.apply(lambda p: 1 if p else 0 ).sum(),
+                        "average_rating" : opinions.rating.mean(),
+                        "rating_distribution" : opinions.rating.value_counts().reindex(np.arange(0,5.5,0.5),fill_value = 0),
+                        "recommendations_distribution" : opinions.recommendation.value_counts().reindex(["Polecam", "Nie polecam","Brak"]).to_dict()
 
                     }
 
@@ -80,7 +89,11 @@ def author():
 
 @app.route('/products')
 def products():
-    products  = [filename.split(".")[0] for filename in os.listdir("app/data/opinions")]
+    products_list  = [filename.split(".")[0] for filename in os.listdir("app/data/opinions")]
+    products = []
+    for product_id in products_list:
+        with open(f"app/data/stats/{product_id}.json","r",encoding="UTF-8") as jf:
+            products.append(json.load(jf))
 
     return render_template('products.html', products = products)
 
@@ -91,3 +104,20 @@ def products():
 @app.route('/product/<product_id>')
 def product(product_id):
     return render_template('product.html', product_id = product_id)
+
+
+@app.route('/product/download_json/<product_id>')
+def download_json(product_id):
+    return send_file(f"app/data/stats/{product_id}.json", "text/json", as_attachment=True)
+
+@app.route('/product/download_csv/<product_id>')
+def download_csv(product_id):
+    opinions = pd.read_json(f'opinions/{product_id}.json')
+    buffer = io.BytesIO(opinions.to_csv(sep=";", decimal=",", index = False).encode())
+
+    return send_file(f"app/data/stats/{product_id}.json", "text/json", as_attachment=True, download_name = f"{product_id}.csv")
+
+
+@app.route('/product/download_xlsx/<product_id>')
+def download_xslx(product_id):
+    pass
